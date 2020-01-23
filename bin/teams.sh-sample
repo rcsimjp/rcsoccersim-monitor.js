@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+$HOME/agent2d-3.1.1/src/start.sh -t LEFT &
+sleep 5
+$HOME/agent2d-3.1.1/src/start.sh -t RIGHT &
