@@ -1,11 +1,48 @@
+//(show 3000 (pm 1) (tm LEFT RIGHT 1 2) ((b) 0 0 0 0)
+const regex_show_ball = /^\(show (\d+) \(pm (\d+)\) \(tm ([^ ]+) ([^ ]+) (\d+) (\d+)\) \(\(b\) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*)\)/;
 const regex_show_player = /(\(\(([lLrR] \d+)\) (-?\d+\.?\d*) ([x\d]+) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*))/g;
 
 var rc_frames = []
 
 function parse_rcg_show(msg) {
+  let found_show_header = msg.match(regex_show_ball);
+  /*
+   * 0: "(show 196 (pm 3) (tm LEFT RIGHT 0 0) ((b) -23.1076 -31.562 -0.6334 -0.3723)"
+​   * 1: "196"
+​   * 2: "3"
+​   * 3: "LEFT"
+​   * 4: "RIGHT"
+​   * 5: "0"
+​   * 6: "0"
+​   * 7: "-23.1076"
+​   * 8: "-31.562"
+​   * 9: "-0.6334"
+​   * 10: "-0.3723"
+   */
   let found_players = [... msg.matchAll(regex_show_player) ];
 
-  let frame = []
+  //console.log(msg);
+  //console.log(found_show_header);
+
+  let frame = {
+    show: found_show_header[1],
+    playmode: found_show_header[2],
+    teams: {
+      left: {
+        name: found_show_header[3],
+        score: found_show_header[5]
+      },
+      right: {
+        name: found_show_header[4],
+        score: found_show_header[6]
+      }
+    },
+    ball: {
+      x:  found_show_header[7],
+      y:  found_show_header[8]
+    },
+    players:[]
+  };
   found_players.forEach((player) => {
     /*
       0: "((l 2) 8 0x1 -25 -5 0 0 -55.298 0"
@@ -21,7 +58,7 @@ function parse_rcg_show(msg) {
 ​​​      10: "0"
      */
     //console.log(player);
-    frame.push([player[2], player[5], player[6]]);
+    frame.players.push([player[2], player[5], player[6]]);
   });
   //console.log(frame);
   rc_frames.push(frame);

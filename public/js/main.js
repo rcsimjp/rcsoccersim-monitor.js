@@ -23,6 +23,14 @@ document.querySelector('#kill_server')
         });
 
 const div_index = document.querySelector('div#index');
+
+const show = document.querySelector('#show');
+const playmode = document.querySelector('#playmode');
+const team_left = document.querySelector('#team_left');
+const team_right = document.querySelector('#team_right');
+const score_left = document.querySelector('#score_left');
+const score_right = document.querySelector('#score_right');
+const ball = document.querySelector('#ball');
 const players = {
   'l 1': document.querySelector('#l_1'),
   'l 2': document.querySelector('#l_2'),
@@ -64,7 +72,18 @@ function draw(i, f) {
   } else {
     let frame = f;
     div_index.innerHTML = i;
-    frame.forEach((player) => {
+
+    show.innerHTML = frame.show;
+    playmode.innerHTML = frame.playmode;
+
+    team_left.innerHTML = frame.teams.left.name;
+    team_right.innerHTML = frame.teams.right.name;
+    score_left.innerHTML = frame.teams.left.score;
+    score_right.innerHTML = frame.teams.right.score;
+
+    ball.setAttribute('cx', frame.ball.x);
+    ball.setAttribute('cy', frame.ball.y);
+    frame.players.forEach((player) => {
       players[player[0]].setAttribute('cx', player[1]);
       players[player[0]].setAttribute('cy', player[2]);
     });
