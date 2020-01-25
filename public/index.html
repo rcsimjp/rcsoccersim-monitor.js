@@ -10,8 +10,24 @@
     <button id="kill_server">kill_server</button>
 
     <div id="index">0</div>
-
-    <svg id="pitch" viewbox="-60 -45 120 90">
+    <p>
+      <span id='show'>#</span> / <span id='playmode'>#</span>
+    </p>
+    <p>
+      <span id='team_left'>left</span> : <span id='score_left'>0</span> - <span id='score_right'>0</span> : <span id='team_right'>right</span>
+    </p>
+    <svg id="pitch" viewbox="-60 -40 120 80" style="background-color: green;">
+      <g fill-opacity=0 stroke=white stroke-width=0.1 >
+        <rect x=-52.5  y=-34 width=105 height=68 />
+        <rect x=-54.94 y=-7.01  width=2.44 height=14.02 />
+        <rect x=52.5   y=-7.01  width=2.44 height=14.02 />
+        <rect x=-52.5  y=-20.16 width=16.5 height=40.32 />
+        <rect x=36     y=-20.16 width=16.5 height=40.32 />
+        <rect x=-52.5  y=-9.16 width=5.5 height=18.32 />
+        <rect x=47     y=-9.16 width=5.5 height=18.32 />
+        <line x1=0 y1=34 x2=0 y2=-34 />
+        <circle cx=0 cy=0 r=9.15 />
+      </g>
       <g fill=yellow>
         <circle id="l_1" cx=0 cy=0 r=1 />
         <circle id="l_2" cx=0 cy=0 r=1 />
@@ -38,6 +54,7 @@
         <circle id="r_10" cx=0 cy=0 r=1 />
         <circle id="r_11" cx=0 cy=0 r=1 />
       </g>
+      <circle id="ball" fill=white cx=0 cy=0 r=0.5 />
     </svg>
 
     <script src="/js/main.js"></script>

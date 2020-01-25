@@ -22,38 +22,15 @@ document.querySelector('#kill_server')
           console.log('kill_server');
         });
 
-const regex_show_player = /(\(\(([lLrR] \d+)\) (-?\d+\.?\d*) ([x\d]+) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*))/g;
-
-var rc_frames = []
-
-function parse_rcg_show(msg) {
-  let found_players = [... msg.matchAll(regex_show_player) ];
-
-  let frame = []
-  found_players.forEach((player) => {
-    /*
-      0: "((l 2) 8 0x1 -25 -5 0 0 -55.298 0"
-​​​      1: "((l 2) 8 0x1 -25 -5 0 0 -55.298 0"
-​​​      2: "l 2"
-​​​      3: "8"
-​​​      4: "0x1"
-​​​      5: "-25"
-​​​      6: "-5"
-​​​      7: "0"
-​​​      8: "0"
-​​​      9: "-55.298"
-​​​      10: "0"
-     */
-    //console.log(player);
-    frame.push([player[2], player[5], player[6]]);
-  });
-  //console.log(frame);
-  rc_frames.push(frame);
-  //console.log(rc_frames.length);
-  //console.log(found_players);
-}
-
 const div_index = document.querySelector('div#index');
+
+const show = document.querySelector('#show');
+const playmode = document.querySelector('#playmode');
+const team_left = document.querySelector('#team_left');
+const team_right = document.querySelector('#team_right');
+const score_left = document.querySelector('#score_left');
+const score_right = document.querySelector('#score_right');
+const ball = document.querySelector('#ball');
 const players = {
   'l 1': document.querySelector('#l_1'),
   'l 2': document.querySelector('#l_2'),
@@ -79,24 +56,34 @@ const players = {
   'r 11': document.querySelector('#r_11'),
 };
 
-const websocket = new WebSocket("ws://0.0.0.0:5001");
-websocket.addEventListener('message', (e) => {
-  const result = e.data.indexOf('(show ');
-  if (result === 0) {
-    parse_rcg_show(e.data);
-  }
-});
+var worker = new Worker("/js/worker-moniter_client.js");
+
+worker.onmessage = function(e) {
+  //console.log(e.data);
+  draw(e.data.index, e.data.frame);
+};
 
 var drawed_index = -1;
-function draw(i) {
+function draw(i, f) {
   if (i < 0) {
     return;
   } else if (i == drawed_index) {
     return;
   } else {
-    let frame = rc_frames[i];
+    let frame = f;
     div_index.innerHTML = i;
-    frame.forEach((player) => {
+
+    show.innerHTML = frame.show;
+    playmode.innerHTML = frame.playmode;
+
+    team_left.innerHTML = frame.teams.left.name;
+    team_right.innerHTML = frame.teams.right.name;
+    score_left.innerHTML = frame.teams.left.score;
+    score_right.innerHTML = frame.teams.right.score;
+
+    ball.setAttribute('cx', frame.ball.x);
+    ball.setAttribute('cy', frame.ball.y);
+    frame.players.forEach((player) => {
       players[player[0]].setAttribute('cx', player[1]);
       players[player[0]].setAttribute('cy', player[2]);
     });
@@ -109,7 +96,8 @@ requestAnimationFrame(function (t0) {
   render(t0);
 
   function render(t1) {
-    draw(rc_frames.length - 1); // 最後のフレームを表示
+    // draw(rc_frames.length - 1); // 最後のフレームを表示
+    worker.postMessage({index: -1}); // 最新フレームを要求
     requestAnimationFrame(render);
   }
 });
