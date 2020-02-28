@@ -22,6 +22,19 @@ document.querySelector('#kill_server')
           console.log('kill_server');
         });
 
+document.querySelector('#watch_on')
+        .addEventListener('click', () => {
+          fetch('/watch_on');
+          console.log('watch_on');
+        });
+
+document.querySelector('#watch_off')
+        .addEventListener('click', () => {
+          fetch('/watch_off');
+          console.log('watch_off');
+        });
+
+
 const div_index = document.querySelector('div#index');
 
 const show = document.querySelector('#show');
