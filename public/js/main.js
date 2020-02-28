@@ -58,10 +58,13 @@ const players = {
 
 var worker = new Worker("/js/worker-moniter_client.js");
 
+worker.postMessage({ mode: 'init', host: document.location.hostname}); // websocet init
+
 worker.onmessage = function(e) {
   //console.log(e.data);
   draw(e.data.index, e.data.frame);
 };
+
 
 var drawed_index = -1;
 function draw(i, f) {
@@ -97,7 +100,7 @@ requestAnimationFrame(function (t0) {
 
   function render(t1) {
     // draw(rc_frames.length - 1); // 最後のフレームを表示
-    worker.postMessage({index: -1}); // 最新フレームを要求
+    worker.postMessage({ mode: 'data', index: -1}); // 最新フレームを要求
     requestAnimationFrame(render);
   }
 });
