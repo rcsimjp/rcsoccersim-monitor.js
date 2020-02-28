@@ -66,24 +66,29 @@ function parse_rcg_show(msg) {
   //console.log(found_players);
 }
 
-const websocket = new WebSocket("ws://0.0.0.0:5001");
-websocket.addEventListener('message', (e) => {
-  const result = e.data.indexOf('(show ');
-  if (result === 0) {
-    parse_rcg_show(e.data);
-  }
-});
+let websocket;
 
 onmessage = function(e) {
-  let i = e.data.index;
+  if (e.data.mode == 'data') {
+    let i = e.data.index;
 
-  if (i < 0) { // マイナスのインデックスは、末尾から
-    i = rc_frames.length + i;
-  } else if (i >= rc_frames.length) { // 要素数より大きい場合は最後の要素を
-    i = rc_frames.length - 1;
+    if (i < 0) { // マイナスのインデックスは、末尾から
+      i = rc_frames.length + i;
+    } else if (i >= rc_frames.length) { // 要素数より大きい場合は最後の要素を
+      i = rc_frames.length - 1;
+    }
+    postMessage({
+      index: i,
+      frame: rc_frames[i]
+    });
+  } else if (e.data.mode == 'init') {
+    console.log(e.data);
+    websocket = new WebSocket("ws://"+ e.data.host +":5001");
+    websocket.addEventListener('message', (e) => {
+      const result = e.data.indexOf('(show ');
+      if (result === 0) {
+        parse_rcg_show(e.data);
+      }
+    });
   }
-  postMessage({
-    index: i,
-    frame: rc_frames[i]
-  });
 };
